@@ -46,9 +46,9 @@ string PhotoLink, Status StatusOfEstate, string PhoneNumber); //создаём �
 event listingEnded(uint index, address payable Owner, uint Square, string InfoAboutEstate, uint Price, TypeOfState Type,  //Event in solidity is to used to log the transactions happening in the blockchain.
 string PhotoLink, Status StatusOfEstate, string PhoneNumber);
 
-modifier onlyOwner(uint index) { //показывается тому, кто owner
-Estate memory cEstate = Estates[index]; //Modifiers are typically used in smart contracts to make sure that certain conditions are met before proceeding to executing the rest of the body of code in the method. - местный аналог try - throw (Exception e)
-require(msg.sender == cEstate.Owner,"fYOU DO NOT OWN THIS HOUSE"); //seller - msg.owner - меняется при продаже на того, кто купил
+modifier onlyOwner() { //показывается тому, кто owner
+//Modifiers are typically used in smart contracts to make sure that certain conditions are met before proceeding to executing the rest of the body of code in the method. - местный аналог try - throw (Exception e)
+require(msg.sender == owner,"fYOU DO NOT OWN THIS HOUSE"); //seller - msg.owner - меняется при продаже на того, кто купил
 _; //Объявление шаблона функции
 }
 
@@ -111,10 +111,8 @@ emit listingEnded(index, payable(msg.sender), cEstate.Square, cEstate.InfoAboutE
 // 1) Списать деньги может только владелец проданной недвижимости
 // 2) Если недвижимость не продана. то деньги списать нельзя.
 // 3) Если покупатель хочет списать деньги, но их на смарт-контракте нет - выводить ошибку. Для этого необходимо ввести журнал проданных и купленных недвижимости.
-function withdraw(uint index) external onlyOwner(index) { //вывод денежных средств
-Estate memory cEstate = Estates[index];
-require(msg.sender == cEstate.Owner,"You don's have enough perms to do it.");
-payable(msg.sender).transfer(cEstate.Price);
+function withdraw() external onlyOwner() { //вывод денежных средств
+payable(msg.sender).transfer(address(this).balance); //this - именно баланс данного контракта 
 }
 
 }
